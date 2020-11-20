@@ -1,3 +1,4 @@
+/*
 #!/usr/bin/env groovy
 
 folder('go')
@@ -41,3 +42,4 @@ logRotator {
   }
   }
   
+  */
