@@ -36,6 +36,7 @@ pipeline {
                 }
             }
         }
+        /*
          stage('Stop containers') {
             steps {
 
@@ -43,7 +44,7 @@ pipeline {
                 sh 'docker container ls -a -fname=gosasitest -q | xargs -r docker container rm || true'
             }
          }
-
+        */
         stage('Run the container') {
             steps{
                 script{
