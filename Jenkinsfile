@@ -38,12 +38,12 @@ pipeline {
         }
          stage('Stop containers') {
             steps {
-                
-                 sh 'docker ps -f name=gosasitest -q | xargs --no-run-if-empty docker container stop'
-                sh 'docker container ls -a -fname=gosasitest -q | xargs -r docker container rm'
+
+                sh 'docker ps -f name=gosasitest -q | xargs --no-run-if-empty docker container stop || true'
+                sh 'docker container ls -a -fname=gosasitest -q | xargs -r docker container rm || true'
             }
          }
-        
+
         stage('Run the container') {
             steps{
                 script{
