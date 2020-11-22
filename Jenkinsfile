@@ -1,30 +1,59 @@
-node {
-    def app
-
-    stage('Clone repository') {
-      
-
-        checkout scm
+pipeline {
+    agent any
+    
+    environment {
+        dockerImage = ''
+        registry = 'sasi1081/gotestsasi'
+        registryCredential = 'dockerhub_id'
     }
-
-    stage('Build image') {
-  
-       app = docker.build("sasi1081/gotest")
-    }
-
-    stage('Test image') {
-  
-
-        app.inside {
-            sh 'echo "Tests passed"'
-        }
-    }
-
-    stage('Push image') {
+    stages{
         
-        docker.withRegistry('https://registry.hub.docker.com', 'git') {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
+        stage('checkout') {
+            
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'sasi1081', url: 'https://github.com/sasi1081/gotest.git']]])
+            }
+        }
+        stage('Build Docker Image') {
+            
+            steps {
+                script {
+                    dockerImage = docker.build registry
+                }
+                
+            }
+        }
+        
+        stage (' Upload Docker image to docker hub'){
+            
+            steps {
+                script {
+                    
+                    docker.withRegistry('',registryCredential){
+                        dockerImage.push()
+                    }
+                    
+                }
+            }
+        }
+        // stage('Stop containers') {
+        //     steps {
+                
+        //         sh 'docker ps -f name=gosasitest -q | xargs --no-run-if-empty docker container stop'
+        //         sh 'docker container ls -a -fname=gosasitest -q | xargs -r docker container rm'
+        //     } 
+        // }
+        
+        stage('Run the container') {
+            steps{
+                script{
+                    dockerImage.run("-p 80:80 --rm --name gosasitest")
+                    
+                    
+                }
+            }
         }
     }
+       
+         
 }
