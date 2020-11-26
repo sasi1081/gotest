@@ -54,6 +54,21 @@ pipeline {
                 }
             }
         }
+        stage ( "Deploy the infra via terraform") {
+
+            steps{
+
+            withAWS(role:'IAMProvisioningRole'){
+               sh '''
+               pwd
+               chmod +x deploy_go_infra.sh
+               ./deploy_go_infra
+               '''
+            }
+            }
+
+        }
+
     }
        
          
